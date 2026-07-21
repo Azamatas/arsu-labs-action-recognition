@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# IDEs
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.ipynb_checkpoints/
+
+# Logs
+*.log
+logs/
+
+# Environment variables
+.env
+
+# Project datasets
+datasets/
+
+# IF-ConvTransformer generated outputs
+reproduction of papers/if-convtransformer/If-ConvTransformer/src/logs/
+reproduction of papers/if-convtransformer/If-ConvTransformer/src/saved_model/
+
+# IF-ConvTransformer datasets (downloaded, not source code)
+reproduction of papers/if-convtransformer/If-ConvTransformer/dataset/
+
+# Model checkpoints
+*.pt
+*.pth
+*.ckpt
+
+# Coverage
+.coverage
+coverage.xml
+htmlcov/
