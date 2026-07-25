@@ -1,0 +1,18 @@
+[tool.ruff]
+
+line-length = 120
+
+target-version = "py312"
+
+# (E = pycodestyle, F = pyflakes, W = warnings)
+select = ["E", "F", "W"]
+
+ignore = []
+
+# Directories to exclude
+exclude = [
+    ".git",
+    "__pycache__",
+    ".venv",
+    "*.egg-info",
+]
