@@ -24,9 +24,7 @@ class Preprocess:
         """
         self.fs = fs
 
-    def apply_filter(
-        self, signal: pd.DataFrame, filter: str = "median", window: int = 5
-    ) -> pd.DataFrame:
+    def apply_filter(self, signal: pd.DataFrame, filter: str = "median", window: int = 5) -> pd.DataFrame:
         """A denosing filter is applied to remove noise in signals.
         Args:
             signal (pd.DataFrame): Raw signal
@@ -38,24 +36,14 @@ class Preprocess:
             'butterworth' applies a 3rd order low-pass Butterworth filter with a corner frequency of 20 Hz.
         """
         if filter == "mean":
-            signal = signal.rolling(
-                window=window, center=True, min_periods=1).mean()
+            signal = signal.rolling(window=window, center=True, min_periods=1).mean()
         elif filter == "median":
-            signal = signal.rolling(
-                window=window,
-                center=True,
-                min_periods=1).median()
+            signal = signal.rolling(window=window, center=True, min_periods=1).median()
         elif filter == "butterworth":
             fc = 20  # cutoff frequency
             w = fc / (self.fs / 2)  # Normalize the frequency
             b, a = butter(3, w, "low")  # 3rd order low-pass Butterworth filter
-            signal = pd.DataFrame(
-                filtfilt(
-                    b,
-                    a,
-                    signal,
-                    axis=0),
-                columns=signal.columns)
+            signal = pd.DataFrame(filtfilt(b, a, signal, axis=0), columns=signal.columns)
         else:
             try:
                 raise ValueError("Not defined filter. See Args.")
@@ -96,8 +84,7 @@ class Preprocess:
         signal_seg = []
 
         for start_idx in range(0, len(signal) + 1 - window_size, overlap):
-            seg = signal.iloc[start_idx: start_idx +
-                              window_size].reset_index(drop=True)
+            seg = signal.iloc[start_idx : start_idx + window_size].reset_index(drop=True)
             if res_type == "array":
                 seg = seg.values
             signal_seg.append(seg)
@@ -107,10 +94,7 @@ class Preprocess:
 
         return signal_seg
 
-    def separate_gravity(self,
-                         acc: pd.DataFrame,
-                         cal_attitude_angle=True) -> Tuple[pd.DataFrame,
-                                                           pd.DataFrame]:
+    def separate_gravity(self, acc: pd.DataFrame, cal_attitude_angle=True) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
         Separate acceleration signal into body and gravity acceleration signal.
         Another low pass Butterworth filter with a corner frequency of 0.3 Hz is applied.
@@ -124,8 +108,7 @@ class Preprocess:
         w = fc / (self.fs / 2)  # Normalize the frequency
         b, a = butter(3, w, "low")  # 3rd order low pass Butterworth filter
         acc_grav = pd.DataFrame(
-            filtfilt(b, a, acc, axis=0),
-            index=acc.index, columns=acc.columns
+            filtfilt(b, a, acc, axis=0), index=acc.index, columns=acc.columns
         )  # Apply Butterworth filter
 
         # Substract gravity acceleration from acceleration sigal.
@@ -135,16 +118,10 @@ class Preprocess:
         if cal_attitude_angle:
             filtered_acc_grav = acc_grav.values
             grav_angle = np.zeros_like(filtered_acc_grav)
-            grav_angle[:, 0] = np.arctan2(
-                filtered_acc_grav[:, 1], filtered_acc_grav[:, 2])
-            grav_angle[:, 1] = np.arctan2(
-                filtered_acc_grav[:, 0], filtered_acc_grav[:, 2])
-            grav_angle[:, 2] = np.arctan2(
-                filtered_acc_grav[:, 0], filtered_acc_grav[:, 1])
-            grav_angle = pd.DataFrame(
-                grav_angle,
-                index=acc.index, columns=acc.columns
-            )
+            grav_angle[:, 0] = np.arctan2(filtered_acc_grav[:, 1], filtered_acc_grav[:, 2])
+            grav_angle[:, 1] = np.arctan2(filtered_acc_grav[:, 0], filtered_acc_grav[:, 2])
+            grav_angle[:, 2] = np.arctan2(filtered_acc_grav[:, 0], filtered_acc_grav[:, 1])
+            grav_angle = pd.DataFrame(grav_angle, index=acc.index, columns=acc.columns)
             return acc_body, grav_angle
         #### cal_attitude_angle####
         else:
@@ -207,12 +184,8 @@ class Preprocess:
         Returns:
             features (array): ECDF percentile values.
         """
-        idx = np.linspace(
-            0,
-            signal.shape[0] - 1,
-            n_bins)  # Take n_bins linspace percentile.
-        idx = [int(Decimal(str(ix)).quantize(
-            Decimal("0"), rounding=ROUND_HALF_UP)) for ix in idx]
+        idx = np.linspace(0, signal.shape[0] - 1, n_bins)  # Take n_bins linspace percentile.
+        idx = [int(Decimal(str(ix)).quantize(Decimal("0"), rounding=ROUND_HALF_UP)) for ix in idx]
         features = np.array([])
         for col in signal.columns:
             ecdf = ECDF(signal[col].values)  # fit
@@ -239,8 +212,7 @@ class Preprocess:
 
     def obtain_sma(self, signal, window_size=128) -> np.ndarray:
         window_second = window_size / self.fs
-        return sum(signal.sum().values - self.obtain_min(signal)
-                   * len(signal)) / window_second
+        return sum(signal.sum().values - self.obtain_min(signal) * len(signal)) / window_second
 
     def obtain_energy(self, signal) -> np.ndarray:
         return norm(signal, ord=2, axis=0) ** 2 / len(signal)
@@ -289,11 +261,13 @@ class Preprocess:
         bandsEnergy = np.array([])
         bins = [0, 4, 8, 12, 16, 20, 24, 29, 34, 39, 44, 49, 54, 59, 64]
         for i in range(len(bins) - 1):
-            df = signal.iloc[bins[i]: bins[i + 1]]
+            df = signal.iloc[bins[i] : bins[i + 1]]
             arr = self.obtain_energy(df)
             bandsEnergy = np.hstack((bandsEnergy, arr))
         return bandsEnergy
 
     def obtain_angle(self, v1, v2) -> np.ndarray:
-        def length(v): return math.sqrt(np.dot(v, v))
+        def length(v):
+            return math.sqrt(np.dot(v, v))
+
         return math.acos(np.dot(v1, v2) / (length(v1) * length(v2)))

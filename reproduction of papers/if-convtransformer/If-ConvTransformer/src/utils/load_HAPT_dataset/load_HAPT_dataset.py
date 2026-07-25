@@ -1,4 +1,5 @@
 """Load dataset"""
+
 import os
 from typing import Dict, Tuple
 
@@ -12,7 +13,9 @@ from utils.load_HAPT_dataset.preprocess_raw_data import preprocess_raw_data
 # DATA_DIR = 'F:\\Activity recogniton\\数据集\\数据集\\有用UCI HAPT\\数据集\\HAPT Data Set为UCI HAR数据集的更新版\\'
 
 
-def load_features(CUR_DIR, DATA_DIR) -> Tuple[
+def load_features(
+    CUR_DIR, DATA_DIR
+) -> Tuple[
     pd.DataFrame,
     pd.DataFrame,
     pd.DataFrame,
@@ -33,42 +36,17 @@ def load_features(CUR_DIR, DATA_DIR) -> Tuple[
         label2act (Dict[int, str]): Dict of label_id to title_of_class
         act2label (Dict[str, int]): Dict of title_of_class to label_id
     """
-    X_train = pd.read_pickle(
-        os.path.join(
-            DATA_DIR,
-            "my_dataset/X_train.pickle"))
-    y_train = pd.DataFrame(
-        np.load(
-            os.path.join(
-                DATA_DIR,
-                "my_dataset/y_train.npy")))
-    subject_id_train = pd.read_table(
-        os.path.join(
-            DATA_DIR,
-            "hapt_data_set/Train/subject_id_train.txt"),
-        sep=" ",
-        header=None)
+    X_train = pd.read_pickle(os.path.join(DATA_DIR, "my_dataset/X_train.pickle"))
+    y_train = pd.DataFrame(np.load(os.path.join(DATA_DIR, "my_dataset/y_train.npy")))
 
     X_test = pd.read_pickle(os.path.join(DATA_DIR, "my_dataset/X_test.pickle"))
-    y_test = pd.DataFrame(
-        np.load(
-            os.path.join(
-                DATA_DIR,
-                "my_dataset/y_test.npy")))
-    subject_id_test = pd.read_table(
-        os.path.join(
-            DATA_DIR,
-            "hapt_data_set/Test/subject_id_test.txt"),
-        sep=" ",
-        header=None)
+    y_test = pd.DataFrame(np.load(os.path.join(DATA_DIR, "my_dataset/y_test.npy")))
 
     activity_labels = pd.read_table(
-        os.path.join(
-            DATA_DIR,
-            "hapt_data_set/activity_labels.txt"),
-        header=None).values.flatten()
-    activity_labels = np.array([label.rstrip().split()
-                               for label in activity_labels])
+        os.path.join(DATA_DIR, "hapt_data_set/activity_labels.txt"),
+        header=None,
+    ).values.flatten()
+    activity_labels = np.array([label.rstrip().split() for label in activity_labels])
     label2act, act2label = {}, {}
     for label, activity in activity_labels:
         label2act[int(label)] = activity
@@ -106,22 +84,23 @@ def load_features(CUR_DIR, DATA_DIR) -> Tuple[
     return X_train, X_test, y_train, y_test, label2act, act2label
 
 
-def load_HAPT_raw_data(DATA_DIR,
-                       TRAIN_SUBJECTS,
-                       ActID,
-                       window_size,
-                       overlap,
-                       separate_gravity_flag,
-                       cal_attitude_angle,
-                       scaler: str = "normalize",
-                       ) -> Tuple[pd.DataFrame,
-                                  pd.DataFrame,
-                                  pd.DataFrame,
-                                  pd.DataFrame,
-                                  Dict[int,
-                                       str],
-                                  Dict[str,
-                                       int]]:
+def load_HAPT_raw_data(
+    DATA_DIR,
+    TRAIN_SUBJECTS,
+    ActID,
+    window_size,
+    overlap,
+    separate_gravity_flag,
+    cal_attitude_angle,
+    scaler: str = "normalize",
+) -> Tuple[
+    pd.DataFrame,
+    pd.DataFrame,
+    pd.DataFrame,
+    pd.DataFrame,
+    Dict[int, str],
+    Dict[str, int],
+]:
     """Load raw dataset.
     The following six classes are included in this experiment.
         - WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING, LAYING
@@ -137,11 +116,16 @@ def load_HAPT_raw_data(DATA_DIR,
         label2act (Dict[int, str]): Dict of label_id to title_of_class
         act2label (Dict[str, int]): Dict of title_of_class to label_id
     """
-    X_train, X_test, Y_train, Y_test, \
-        User_ids_train, User_ids_test = preprocess_raw_data(DATA_DIR, TRAIN_SUBJECTS, ActID,
-                                                            window_size, overlap, cal_attitude_angle,
-                                                            scaler=scaler,
-                                                            separate_gravity_flag=separate_gravity_flag)
+    X_train, X_test, Y_train, Y_test, User_ids_train, User_ids_test = preprocess_raw_data(
+        DATA_DIR,
+        TRAIN_SUBJECTS,
+        ActID,
+        window_size,
+        overlap,
+        cal_attitude_angle,
+        scaler=scaler,
+        separate_gravity_flag=separate_gravity_flag,
+    )
     # y_train = pd.read_table(os.path.join(DATA_DIR, "Train\y_train.txt"), sep=" ", header=None)
     # y_test = pd.read_table(os.path.join(DATA_DIR, "Test\y_test.txt"), sep=" ", header=None)
     y_train = np.expand_dims(Y_train, 1)
@@ -150,10 +134,10 @@ def load_HAPT_raw_data(DATA_DIR,
     activity_labels = pd.read_table(
         # os.path.join(DATA_DIR, "hapt_data_set/activity_labels.txt"),
         # header=None
-        os.path.join(DATA_DIR, "activity_labels.txt"), header=None
+        os.path.join(DATA_DIR, "activity_labels.txt"),
+        header=None,
     ).values.flatten()
-    activity_labels = np.array([label.rstrip().split()
-                               for label in activity_labels])
+    activity_labels = np.array([label.rstrip().split() for label in activity_labels])
     label2act, act2label = {}, {}
     for label, activity in activity_labels:
         label2act[int(label) - 1] = activity
@@ -162,5 +146,13 @@ def load_HAPT_raw_data(DATA_DIR,
     X_train = np.swapaxes(X_train.squeeze(), 1, 2)
     X_test = np.swapaxes(X_test.squeeze(), 1, 2)
 
-    return np.expand_dims(X_train, axis=1), np.expand_dims(X_test, axis=1), (y_train - 1).squeeze(
-    ), (y_test - 1).squeeze(), np.array(User_ids_train), np.array(User_ids_test), label2act, act2label
+    return (
+        np.expand_dims(X_train, axis=1),
+        np.expand_dims(X_test, axis=1),
+        (y_train - 1).squeeze(),
+        (y_test - 1).squeeze(),
+        np.array(User_ids_train),
+        np.array(User_ids_test),
+        label2act,
+        act2label,
+    )
