@@ -50,3 +50,20 @@ Only three mistakes appeared on confusion matrix in between these classes:
 
 **Overall Accuracy:** `0.7716`  
 **Hamming Loss:** `0.2284`
+
+---
+## UniMiB testing
+
+Accuracy: 0.1524798927613941
+
+Macro F1: 0.13127900559404534
+              precision    recall  f1-score   support
+
+  Downstairs       0.22      0.10      0.13      1324
+     Jogging       0.00      0.00      0.00      1985
+    Upstairs       0.15      0.56      0.23       921
+     Walking       0.17      0.15      0.16      1738
+
+   micro avg       0.16      0.15      0.16      5968
+   macro avg       0.13      0.20      0.13      5968
+weighted avg       0.12      0.15      0.11      5968

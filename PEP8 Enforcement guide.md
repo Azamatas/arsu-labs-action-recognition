@@ -66,5 +66,5 @@ pep8-format:
     - if: '$CI_PIPELINE_SOURCE == "push"'
   allow_failure: true
 ```
-and if you want to organise your CI scripts you can also create a directory "actions" for all future scripts.
+and  if you want to organise your CI scripts you can also create a directory "actions" for all future scripts.
 
