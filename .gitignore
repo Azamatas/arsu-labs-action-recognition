@@ -46,6 +46,11 @@ reproduction of papers/if-convtransformer/If-ConvTransformer/dataset/
 *.pth
 *.ckpt
 
+# ClassicML (aiff22/HAR reproduction) - downloaded archive and generated data
+reproduction of papers/ClassicML/data_processing/datasets.zip
+reproduction of papers/ClassicML/data_processing/wisdm_data/*.csv
+reproduction of papers/ClassicML/data_processing/uci_data/*.csv
+
 # Coverage
 .coverage
 coverage.xml
