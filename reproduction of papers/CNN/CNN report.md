@@ -17,7 +17,6 @@ Only three mistakes appeared on confusion matrix in between these classes:
 
 ---
 # Results for UniMiB 50Hz:
-### Results for UniMiB 50Hz
 
 | Metric           | Value                                                                 |
 |------------------|-----------------------------------------------------------------------|
