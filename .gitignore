@@ -55,3 +55,7 @@ reproduction of papers/ClassicML/data_processing/uci_data/*.csv
 .coverage
 coverage.xml
 htmlcov/
+# FIN experiments - derived artefacts, all regenerable
+reproduction of papers/ClassicML/FIN-experiments/windows_cache.npz
+reproduction of papers/ClassicML/FIN-experiments/trained_models/
+reproduction of papers/ClassicML/FIN-experiments/ensemble_results/
