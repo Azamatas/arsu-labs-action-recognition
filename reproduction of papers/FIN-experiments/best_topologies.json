@@ -1,0 +1,16 @@
+{
+  "best": {
+    "mean": 13,
+    "std": 14,
+    "mad": 14
+  },
+  "context": {
+    "n_topologies": 25,
+    "segment": 200,
+    "splits": {
+      "train": [1, 21],
+      "val": [21, 27],
+      "test": [27, 37]
+    }
+  }
+}
