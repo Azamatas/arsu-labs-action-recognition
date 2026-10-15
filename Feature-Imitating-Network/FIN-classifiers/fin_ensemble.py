@@ -7,13 +7,14 @@ os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 OUT_DIR = os.path.join(BASE_DIR, "ensemble_results")
-sys.path.insert(0, os.path.dirname(BASE_DIR))
+sys.path[:0] = [BASE_DIR, os.path.dirname(BASE_DIR), os.path.join(os.path.dirname(BASE_DIR), "data-processing")]
 
 import keras
 import numpy as np
 from keras import layers, ops
 from sklearn.metrics import f1_score
 
+import statistical_features as ignatov
 import wisdm_windowing
 from config import (AXES, BATCH_SIZE, FEATURES, FIN_EPOCHS, FIN_LR, FREEZE_EPOCHS, HEAD_EPOCHS, HEAD_LR,
                     HEAD_WIDTH, N_CLASSES, SEED, SEGMENT)
@@ -30,20 +31,10 @@ load_splits = wisdm_windowing.load_splits
 
 
 def extra_features(windows):
-    w = windows.astype(np.float64)
-    out = [np.sqrt((w**2).sum(axis=1)).mean(axis=1)]
-
-    for a in range(len(AXES)):
-        x = w[:, a, :]
-        lo = x.min(axis=1, keepdims=True)
-        width = (x.max(axis=1, keepdims=True) - lo) / 10
-        width = np.where(width == 0, 1.0, width)
-        idx = np.clip(((x - (lo - width / 2)) / width).astype(int), 0, 9)
-        counts = np.zeros((len(x), 10))
-        np.add.at(counts, (np.arange(len(x))[:, None], idx), 1)
-        out += list((counts / x.shape[1]).T)
-
-    return np.stack(out, axis=1).astype(np.float32)
+    """The 31 of Ignatov's 40 features the FINs do not supply: the average resultant acceleration and the
+    10-bin histogram of each axis (his columns 9-39; columns 0-8 are the mean, std and mad the FINs imitate)."""
+    full = np.stack([ignatov.extract_basic_features(*w) for w in windows.astype(np.float64)])
+    return full[:, 9:].astype(np.float32)
 
 
 def make_fin(bank, topos, feature, truncate):
@@ -151,8 +142,12 @@ def main():
         if args.init == "fin":
             print(f"seed {seed}: imitation R² "
                   + ", ".join(f"{k} {v:.4f}" for k, v in imitation.items()), flush=True)
+        # gradual and unfrozen runs train the FINs, so every run starts again from these weights
+        snapshot = {name: [w.copy() for w in fin.get_weights()] for name, fin in fins.items()}
         for regime in args.regimes:
             for hl in args.head_layers:
+                for name, fin in fins.items():
+                    fin.set_weights(snapshot[name])
                 r = run_regime(fins, hl, regime, data, seed, extras,
                                track_test=args.protocol == "ignatov")
                 rows.append((seed, regime, hl, r))

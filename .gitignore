@@ -56,5 +56,6 @@ reproduction of papers/ClassicML/data_processing/uci_data/*.csv
 coverage.xml
 htmlcov/
 # Feature-Imitating-Network - derived artefacts, all regenerable
-reproduction of papers/Feature-Imitating-Network/windows_cache.npz
-reproduction of papers/Feature-Imitating-Network/FIN-classifiers/ensemble_results/
+Feature-Imitating-Network/data-processing/windows_cache.npz
+Feature-Imitating-Network/FIN-classifiers/ensemble_results/
+Feature-Imitating-Network/data-processing/motionsense_cache.npz

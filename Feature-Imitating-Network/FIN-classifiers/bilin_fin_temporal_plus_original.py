@@ -5,10 +5,8 @@ os.environ["KERAS_BACKEND"] = "torch"
 os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2") # silences tf logs
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
-sys.path.insert(0, HERE)
-sys.path.insert(0, ROOT)
-sys.path.insert(0, os.path.join(os.path.dirname(ROOT), "ClassicML", "data_processing"))
+FIN = os.path.dirname(HERE)
+sys.path[:0] = [HERE, FIN, os.path.join(FIN, "data-processing")]
 
 import argparse
 
@@ -18,8 +16,7 @@ from keras import layers, ops
 from sklearn.metrics import f1_score
 
 import config as cfg
-import fin_ensemble as fe
-import generate_wisdm_data as ignatov # retrieve 40 statistical features extractor
+import statistical_features as ignatov # retrieve 40 statistical features extractor
 import wisdm_windowing as ww # temporal feature calc func for one axis
 
 TARGETS = ("spec_entropy", "ac_peak", "spec_peak")
@@ -77,7 +74,7 @@ def main():
     parser.add_argument("--seed", type=int, default=cfg.SEED)
     seed = parser.parse_args().seed
 
-    data = fe.load_splits()
+    data = ww.load_splits()
     xtr = np.concatenate([data["train"][0], data["val"][0]])  # users 1-26
     ytr = np.concatenate([data["train"][1], data["val"][1]])
     xte, yte = data["test"]                                     # users 27-36

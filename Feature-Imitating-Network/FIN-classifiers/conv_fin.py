@@ -1,49 +1,44 @@
+import os
+import sys
+
+FIN = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path[:0] = [FIN, os.path.join(FIN, "data-processing")]
+
 import keras
-from keras import layers
+from keras import layers, ops
 import numpy as np
 
 from config import BATCH_SIZE, FEATURES, FIN_EPOCHS, FIN_LR, SEGMENT
 from wisdm_windowing import compute_feature
 
-# winners of the random topology search on 1337
-FLAT_TOPOLOGIES = {
-    "mean": {"widths": [256, 512, 32, 64], "bn": [True, False, False, False]},
-    "std": {"widths": [1024, 512, 1280, 64], "bn": [False, True, True, False]},
-    "mad": {"widths": [1024, 512, 1280, 64], "bn": [False, True, True, False]},
-}
 
-
-class FlatFIN(keras.Model):
-    def __init__(self, topology, truncate=1, **kw):
+class ConvFIN(keras.Model):
+    def __init__(self, width=64, truncate=1, **kw):
         super().__init__(**kw)
-        self.blocks = []
-        for width, bn in zip(topology["widths"], topology["bn"]):
-            block = [layers.Dense(width, activation="relu")]
-            if bn:
-                block.append(layers.BatchNormalization())
-            self.blocks.append(block)
+        self.c1 = layers.Conv1D(width, 1, activation="relu")
+        self.c2 = layers.Conv1D(width, 1, activation="relu")
+        self.proj = layers.Dense(width, activation="relu")
         self.head = layers.Dense(1)
-        self.kept = len(self.blocks) - (truncate - 1)
-        self.embed_width = topology["widths"][self.kept - 1]
+        self.truncate = truncate
+        self.embed_width = width
+
+    def _pooled(self, x):
+        h = self.c2(self.c1(ops.expand_dims(x, axis=-1)))
+        return ops.mean(h, axis=1)
 
     def embed(self, x):
-        for block in self.blocks[: self.kept]:
-            for layer in block:
-                x = layer(x)
-        return x
+        h = self._pooled(x)
+        return h if self.truncate == 2 else self.proj(h)
 
     def call(self, x):
-        for block in self.blocks:
-            for layer in block:
-                x = layer(x)
-        return self.head(x)
+        return self.head(self.proj(self._pooled(x)))
 
 
 def build_bank(x_axes_train, x_axes_test, seed, init="fin", truncate=1):
     fins, imitation = {}, {}
     for feature in FEATURES:
         keras.utils.set_random_seed(seed)
-        model = FlatFIN(FLAT_TOPOLOGIES[feature], truncate)
+        model = ConvFIN(truncate=truncate)
         if init == "random":
             model(np.zeros((1, SEGMENT), np.float32))
             imitation[feature] = float("nan")

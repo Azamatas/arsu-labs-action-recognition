@@ -9,7 +9,7 @@ ROOT = os.path.dirname(HERE)
 OUT_DIR = os.path.join(HERE, "ensemble_results")
 sys.path.insert(0, HERE)
 sys.path.insert(0, ROOT)
-sys.path.insert(0, os.path.join(os.path.dirname(ROOT), "ClassicML", "data_processing"))
+sys.path.insert(0, os.path.join(ROOT, "data-processing"))
 
 import argparse
 import glob
@@ -22,7 +22,7 @@ from sklearn.metrics import f1_score
 
 import config as cfg
 import fin_ensemble as fe
-import generate_wisdm_data as ignatov
+import statistical_features as ignatov
 
 FIN_COLUMNS = 9
 WITH_FIN = ("none", "concat", "after")
