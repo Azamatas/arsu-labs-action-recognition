@@ -1,7 +1,7 @@
 # ARSU Labs - Bilinear Feature Imitating Networks for Human Activity Recognition
 
 This is the code of the paper "Cross Dataset Generalization with Feature Imitating Networks for Human Activity
-Recognition" (Azamat Amanbay, Sari Saba-Sadiya).
+Recognition" (Azamat Amanbay, Sungat Serikbay, Sari Saba-Sadiya).
 
 ---
 
@@ -19,15 +19,28 @@ for real-world wearable applications, which is increasingly dominated by
 large, task-agnostic foundation models.
 
 ---
+## 2. Architecture
 
-## 2. Prerequisite
+<p align="center">
+  <img src="fin_arch.png" width="90%" alt="Architecture of the bilinear FIN">
+  <br>
+  <em>Figure 1: Architecture of bilinear FIN. Each axis of a 3 × 200 window is z-scored
+and passed one at a time through the bilinear FIN: two linear convolutions, their
+element-wise product and its mean over time and a dense layer. The three axis
+embeddings are concatenated with the 40 standardized statistical features and
+classified by a dense layer head with dropout and a softmax over the activities. </em>
+</p>
+
+---
+
+## 3. Prerequisite
 
 ```bash
 python -m venv .venv
 .venv\Scripts\activate          # Linux/macOS: source .venv/bin/activate
 pip install -r requirements.txt
 ```
-### 2.1 Datasets
+### 3.1 Datasets
 We focus on two common datasets **WISDM v1.1** and **MotionSense** as they use similar labels, allowing us to directly compare generalization performance across
 datasets. For each dataset, we use a subject-level split, and 10-second windows
 with 50% overlap. We always ensure that each window contains data from a 
@@ -35,9 +48,9 @@ single activity at a time.
 
 ---
 
-## 3. Experiments
+## 4. Experiments
 
-### 3.1 Data Scarcity
+### 4.1 Data Scarcity
 
 The models were trained on the windows of 7 users from WISDM and tested on the 27 unseen users of the same dataset,
 over 5 seeds for 150 epochs.
@@ -47,7 +60,7 @@ Run two notebooks from `data-scarcity/`:
 - `data_scarcity.ipynb`: neural models and the accuracy curves
 - `baselines_7_users.ipynb`: classical models
 
-### 3.2 Cross-dataset
+### 4.2 Cross-dataset
 
 The models were trained on one dataset and tested on the other, over 5 seeds for 60 epochs:
 
