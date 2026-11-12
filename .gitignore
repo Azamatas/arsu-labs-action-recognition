@@ -34,28 +34,16 @@ logs/
 # Project datasets
 datasets/
 
-# IF-ConvTransformer generated outputs
-reproduction of papers/if-convtransformer/If-ConvTransformer/src/logs/
-reproduction of papers/if-convtransformer/If-ConvTransformer/src/saved_model/
-
-# IF-ConvTransformer datasets (downloaded, not source code)
-reproduction of papers/if-convtransformer/If-ConvTransformer/dataset/
-
 # Model checkpoints
 *.pt
 *.pth
 *.ckpt
 
-# ClassicML (aiff22/HAR reproduction) - downloaded archive and generated data
-reproduction of papers/ClassicML/data_processing/datasets.zip
-reproduction of papers/ClassicML/data_processing/wisdm_data/*.csv
-reproduction of papers/ClassicML/data_processing/uci_data/*.csv
-
 # Coverage
 .coverage
 coverage.xml
 htmlcov/
-# Feature-Imitating-Network - derived artefacts, all regenerable
-Feature-Imitating-Network/data-processing/windows_cache.npz
-Feature-Imitating-Network/FIN-classifiers/ensemble_results/
-Feature-Imitating-Network/data-processing/motionsense_cache.npz
+
+# Window caches, rebuilt from datasets/ on the first run
+data-processing/windows_cache.npz
+data-processing/motionsense_cache.npz

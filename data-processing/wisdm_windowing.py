@@ -15,7 +15,7 @@ CACHE_PATH = os.path.join(BASE_DIR, "windows_cache.npz")
 
 
 def read_raw():
-    """The cleaned WISDM file: every record ends with ';'. """
+    """every WISDM record ends with ';'. """
     with open(RAW_PATH) as f:
         lines = [line for line in f.read().replace(";", "\n").splitlines() if line.strip()]
     return io.StringIO("\n".join(lines))

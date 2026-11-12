@@ -35,11 +35,17 @@ print(str(len(data_train)) + " training windows, loading done, " + str(data_trai
 
 # Classification
 
+seed = int(sys.argv[1]) if len(sys.argv) > 1 else 42  # optional: python script.py <seed>
+
+# the model is deterministic, so the seed shuffles the order of the training windows
+order = np.random.default_rng(seed).permutation(len(labels_train))
+data_train, labels_train = data_train[order], labels_train[order]
+
 scaler = StandardScaler()
 data_train = scaler.fit_transform(data_train)
 data_test = scaler.transform(data_test)
 
-clf = LogisticRegression(max_iter=1000, random_state=42)
+clf = LogisticRegression(max_iter=1000, random_state=seed)
 clf.fit(data_train, labels_train)
 
 predictions = clf.predict(data_test)

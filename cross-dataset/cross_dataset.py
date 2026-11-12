@@ -25,7 +25,6 @@ CNN_LR = 5e-4
 
 
 def load(direction):
-    """Training windows (with the flipped copies), labels and named test sets."""
     import motionsense_windowing as ms
     import wisdm_windowing as ww
 
@@ -93,8 +92,6 @@ def train(direction, seeds, models=tuple(MODELS)):
         return keras.Model([signal, features], layers.Dense(cfg.N_CLASSES, activation="softmax", **init)(h))
 
     def centred(x):
-        """Ignatov's input: per-window, per-axis mean removed, then hstack(x, y, z) reshaped to (time, 3) as in his
-        code, i.e. 3 consecutive samples of one axis per time step."""
         x = x - x.mean(axis=2, keepdims=True)
         return x.reshape(len(x), cfg.SEGMENT, len(cfg.AXES)).astype(np.float32)
 
@@ -109,7 +106,7 @@ def train(direction, seeds, models=tuple(MODELS)):
           + ", ".join(f"{name} {len(y)} windows" for name, (_, y) in tests.items()), flush=True)
 
     def fit(model, x, phases, lr, inputs):
-        """phases: list of (epochs, callable run before them). Returns the test curves and final predictions."""
+        """Returns the test curves and final predictions."""
         track = TestAccuracy({name: (inputs(name), y) for name, (_, y) in tests.items()})
         for epochs, before in phases:
             before()
@@ -191,9 +188,7 @@ def report(direction, path):
 
 
 def std_bands(ax, x, bands, alpha=0.18):
-    """Mean +- s.d. regions as opaque fills that look like alpha-blended ones (EPS has no transparency): every
-    overlap of several bands is filled with the colour those bands would blend to over white.
-    bands: list of (low, high, colour), drawn in this order."""
+    """Mean +- s.d. regions"""
     from itertools import combinations
 
     from matplotlib.colors import to_rgb
@@ -209,8 +204,6 @@ def std_bands(ax, x, bands, alpha=0.18):
 
 
 def plot(direction, path):
-    """Test accuracy per epoch on the other dataset (mean +- s.d. over seeds) and the confusion matrices summed over
-    seeds, row-normalised; .eps (for the ESANN template), .pdf and .png in results/."""
     import matplotlib
 
     matplotlib.use("Agg")
@@ -254,7 +247,7 @@ def plot(direction, path):
     cols = 2 if len(shown) > 3 else len(shown)
     rows = -(-len(shown) // cols)
     fig, axes = plt.subplots(rows, cols, figsize=(4.72, 1.75 * rows if cols < 3 else 1.75),
-                             squeeze=False)  # 12 cm, the ESANN text width
+                             squeeze=False)
     axes = axes.ravel()
     for ax, m in zip(axes, shown):
         label = MODELS[m][0]

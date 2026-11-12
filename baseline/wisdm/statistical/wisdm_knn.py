@@ -32,6 +32,12 @@ print(str(len(data_train)) + " training windows, loading done, " + str(data_trai
 
 # Classification
 
+seed = int(sys.argv[1]) if len(sys.argv) > 1 else 42  # optional: python script.py <seed>
+
+# the model is deterministic, so the seed shuffles the order of the training windows
+order = np.random.default_rng(seed).permutation(len(labels_train))
+data_train, labels_train = data_train[order], labels_train[order]
+
 knn = KNeighborsClassifier(n_neighbors=1, p=1)
 knn.fit(data_train, labels_train)
 

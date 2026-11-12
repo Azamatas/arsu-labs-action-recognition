@@ -11,10 +11,9 @@ CM = 1 / 2.54
 SIZE = (5.86 * CM, 5.46 * 1.15 * CM)
 XMAX = 50
 
-CURVE = [("fin40_pretrained", "FIN + 40, pretrained", "#2a78d6", "#dae8fc"),  # frozen-box blue / product tensor
-         ("fin40_random", "FIN + 40, random init", "#d79b00", "#ffe6cc"),    # convolution outputs
-         ("ignatov_cnn", "CNN (+40 stat.)", "#82b366", "#d5e8d4"),            # time-averaged tensor
-         ("fin_random", "FIN, random init", "#8a8a86", "#eaeae9")]            # input-window frame / dense head
+CURVE = [("fin40_pretrained", "FIN + 40, pretrained", "#2a78d6", "#dae8fc"),
+         ("ignatov_cnn", "CNN (+40 stat.)", "#82b366", "#d5e8d4"),
+         ("fin_random", "FIN, random init", "#8a8a86", "#eaeae9")]
 
 
 def bands(ax, x, items):

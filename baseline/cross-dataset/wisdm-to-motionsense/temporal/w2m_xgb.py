@@ -42,6 +42,10 @@ print(str(len(data_train)) + " training windows, loading done, " + str(data_trai
 
 seed = int(sys.argv[1]) if len(sys.argv) > 1 else 42  # optional: python script.py <seed>
 
+# XGBoost has no randomness of its own here, so the seed shuffles the order of the training windows
+order = np.random.default_rng(seed).permutation(len(labels_train))
+data_train, labels_train = data_train[order], labels_train[order]
+
 clf = XGBClassifier(n_estimators=100, random_state=seed, eval_metric='mlogloss')
 clf.fit(data_train, labels_train)
 
